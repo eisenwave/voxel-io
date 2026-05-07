@@ -99,7 +99,7 @@ struct MovingAverage {
     /// This will always produce the correct average of inserted numbers, even if fewer than N numbers were added.
     constexpr Number operator*() const
     {
-        VXIO_DEBUG_ASSERT_NE(index, 0);
+        VXIO_DEBUG_ASSERT_NE(index, usize{0});
         return static_cast<Number>(sum / std::min(index, N));
     }
 };
