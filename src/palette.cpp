@@ -335,6 +335,7 @@ std::unique_ptr<u32[]> Palette32::reduceByClustering(const usize desiredSize) co
     const usize clusterCount = desiredSize;
     const usize colorCount = size();
     constexpr u32 NO_REPRESENTATIVE = ~u32{0};
+    constexpr u32 MAX_DISTANCE = ~u32{0};
 
     auto result = std::make_unique<u32[]>(colorCount);
     auto clusterRepresentatives = std::make_unique<u32[]>(clusterCount);
@@ -342,7 +343,7 @@ std::unique_ptr<u32[]> Palette32::reduceByClustering(const usize desiredSize) co
     auto clusterCenterColors = std::make_unique<argb32[]>(clusterCount);
     for (u32 i = 0; i < clusterCount; ++i) {
         clusterRepresentatives[i] = NO_REPRESENTATIVE;
-        representativeDistances[i] = ~u32{0};
+        representativeDistances[i] = MAX_DISTANCE;
     }
 
     /// Maps from cluster center points to a unique index of the center.
