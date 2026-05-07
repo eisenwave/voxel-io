@@ -334,8 +334,16 @@ std::unique_ptr<u32[]> Palette32::reduceByClustering(const usize desiredSize) co
 
     const usize clusterCount = desiredSize;
     const usize colorCount = size();
+    constexpr u32 NO_REPRESENTATIVE = ~u32{0};
 
     auto result = std::make_unique<u32[]>(colorCount);
+    auto clusterRepresentatives = std::make_unique<u32[]>(clusterCount);
+    auto representativeDistances = std::make_unique<u32[]>(clusterCount);
+    auto clusterCenterColors = std::make_unique<argb32[]>(clusterCount);
+    for (u32 i = 0; i < clusterCount; ++i) {
+        clusterRepresentatives[i] = NO_REPRESENTATIVE;
+        representativeDistances[i] = ~u32{0};
+    }
 
     /// Maps from cluster center points to a unique index of the center.
     HexTree clusterCenters = kmeans::seedClusterCenters(data(), colorCount, clusterCount);
@@ -363,14 +371,29 @@ std::unique_ptr<u32[]> Palette32::reduceByClustering(const usize desiredSize) co
     for (u32 i = 0; i < colorCount; ++i) {
         points.insert(colorOf(i), i);
     }
+    clusterCenters.forEach([&clusterCenterColors](argb32 center, u32 index) -> void { clusterCenterColors[index] = center; });
 
     for (u32 i = 0; i < colorCount; ++i) {
         argb32 color = colorOf(i);
         std::pair<argb32, u32> closestClusterCenter = clusterCenters.closest(color);
-        // TODO consider caching the representative for each center instead of computing it here
-        std::pair<argb32, u32> representativeColor = points.closest(closestClusterCenter.first);
+        const u32 clusterIndex = closestClusterCenter.second;
+        const u32 distanceToCenter = detail::distanceSqr(unpack4b(color), unpack4b(closestClusterCenter.first));
+        if (distanceToCenter < representativeDistances[clusterIndex]) {
+            representativeDistances[clusterIndex] = distanceToCenter;
+            clusterRepresentatives[clusterIndex] = i;
+        }
 
-        result[i] = representativeColor.second;
+        result[i] = clusterIndex;
+    }
+
+    for (u32 i = 0; i < clusterCount; ++i) {
+        if (clusterRepresentatives[i] == NO_REPRESENTATIVE) {
+            clusterRepresentatives[i] = points.closest(clusterCenterColors[i]).second;
+        }
+    }
+
+    for (u32 i = 0; i < colorCount; ++i) {
+        result[i] = clusterRepresentatives[result[i]];
     }
 
     return result;
