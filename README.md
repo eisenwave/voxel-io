@@ -1,3 +1,6 @@
+[![Windows](https://github.com/eisenwave/voxel-io/actions/workflows/windows.yml/badge.svg)](https://github.com/eisenwave/voxel-io/actions/workflows/windows.yml)
+[![Linux](https://github.com/eisenwave/voxel-io/actions/workflows/linux.yml/badge.svg)](https://github.com/eisenwave/voxel-io/actions/workflows/linux.yml)
+
 # voxel-io
 
 **voxel-io** is a C++17, MIT-licensed library for reading and writing various voxel formats.
