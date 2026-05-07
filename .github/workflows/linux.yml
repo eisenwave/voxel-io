@@ -10,7 +10,8 @@ jobs:
   build:
     strategy:
       matrix:
-        compiler: [g++-10, clang++-10]
+        compiler: [g++, clang++]
+        build_type: [Debug, Release]
     
     runs-on: ubuntu-latest
     env:
@@ -21,22 +22,20 @@ jobs:
       
     - name: Check environment
       run: |
-        g++-10 --version
-        clang++-10 --version
+        g++ --version
+        clang++ --version
+        $CXX --version
         cmake --version
         make --version
-        
-    - name: Make build directory
-      run: cmake -E make_directory build
       
     - name: CMake
       env:
         CXXFLAGS: -Wall -Wpedantic -Wextra -Werror
-      run: cmake -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=$CXX
+      run: cmake -B build -DCMAKE_BUILD_TYPE=${{matrix.build_type}} -DCMAKE_CXX_COMPILER=$CXX
       
-    - name: Make
+    - name: Build
       shell: bash
-      run: make -C build
+      run: cmake --build build
       
     - name: Test
       run: build/test/voxelio-test
