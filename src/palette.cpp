@@ -157,7 +157,7 @@ u32 chooseRepresentative(const MortonAndIndex pairs[], const u32 count)
         const u32 distance = detail::distanceSqr(origin, point);
         if (distance < closestDistance) {
             closestDistance = distance;
-            closestIndex = pairs->index;
+            closestIndex = pairs[i].index;
         }
     }
 

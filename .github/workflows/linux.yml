@@ -8,30 +8,68 @@ on:
 
 jobs:
   build:
+    name: ${{ matrix.name }}
     strategy:
       matrix:
-        compiler: [g++, clang++]
-        build_type: [Debug, Release]
+        include:
+          - name: GCC Debug
+            cc: gcc
+            cxx: g++
+            build_type: Debug
+          - name: GCC Release
+            cc: gcc
+            cxx: g++
+            build_type: Release
+          - name: Clang Debug
+            cc: clang
+            cxx: clang++
+            build_type: Debug
+          - name: Clang Release
+            cc: clang
+            cxx: clang++
+            build_type: Release
+          - name: Clang libc++ Debug
+            cc: clang
+            cxx: clang++
+            build_type: Debug
+            cxxflags: -Wall -Wpedantic -Wextra -Werror -stdlib=libc++
+            ldflags: -stdlib=libc++
+            install_packages: libc++-dev libc++abi-dev
+          - name: Clang libc++ Release
+            cc: clang
+            cxx: clang++
+            build_type: Release
+            cxxflags: -Wall -Wpedantic -Wextra -Werror -stdlib=libc++
+            ldflags: -stdlib=libc++
+            install_packages: libc++-dev libc++abi-dev
     
     runs-on: ubuntu-latest
     env:
-      CXX: ${{matrix.compiler}}
+      CC: ${{ matrix.cc }}
+      CXX: ${{ matrix.cxx }}
+      CXXFLAGS: ${{ matrix.cxxflags || '-Wall -Wpedantic -Wextra -Werror' }}
+      LDFLAGS: ${{ matrix.ldflags || '' }}
 
     steps:
     - uses: actions/checkout@v2
+
+    - name: Install libc++
+      if: ${{ matrix.install_packages }}
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y ${{ matrix.install_packages }}
       
     - name: Check environment
       run: |
         g++ --version
         clang++ --version
+        $CC --version
         $CXX --version
         cmake --version
         make --version
       
     - name: CMake
-      env:
-        CXXFLAGS: -Wall -Wpedantic -Wextra -Werror
-      run: cmake -B build -DCMAKE_BUILD_TYPE=${{matrix.build_type}} -DCMAKE_CXX_COMPILER=$CXX
+      run: cmake -B build -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DCMAKE_C_COMPILER=$CC -DCMAKE_CXX_COMPILER=$CXX
       
     - name: Build
       shell: bash
