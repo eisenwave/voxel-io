@@ -83,7 +83,7 @@ constexpr void ileave_naive(const Uint inputs[], uint64_t outputs[], usize count
     constexpr Uint singleInputBits = sizeof(Uint) * 8;
     constexpr Uint singleOutputBits = sizeof(uint64_t) * 8;
 
-    VXIO_DEBUG_ASSERT_LE(count, 8);
+    VXIO_DEBUG_ASSERT_LE(count, usize{8});
     VXIO_ASSUME(count <= 8);
 
     if (count == 0) {
@@ -121,7 +121,7 @@ constexpr void ileave_naive(const Uint inputs[], uint64_t outputs[], usize count
 template <typename Uint>
 constexpr void ileave_jmp(const Uint inputs[], uint64_t outputs[], usize count)
 {
-    VXIO_DEBUG_ASSERT_LE(count, 8);
+    VXIO_DEBUG_ASSERT_LE(count, usize{8});
     VXIO_ASSUME(count <= 8);
 
     switch (count) {
@@ -203,7 +203,7 @@ constexpr void dileave_naive(const uint64_t inputs[], Uint outputs[], usize coun
     constexpr Uint singleInputBits = sizeof(uint64_t) * 8;
     constexpr Uint singleOutputBits = sizeof(Uint) * 8;
 
-    VXIO_DEBUG_ASSERT_LE(count, 8);
+    VXIO_DEBUG_ASSERT_LE(count, usize{8});
     VXIO_ASSUME(count <= 8);
 
     if (count == 0) {
@@ -239,7 +239,7 @@ constexpr void dileave_naive(const uint64_t inputs[], Uint outputs[], usize coun
 template <typename Uint>
 constexpr void dileave_jmp(const uint64_t inputs[], Uint outputs[], usize count)
 {
-    VXIO_DEBUG_ASSERT_LE(count, 8);
+    VXIO_DEBUG_ASSERT_LE(count, usize{8});
     VXIO_ASSUME(count <= 8);
 
     switch (count) {

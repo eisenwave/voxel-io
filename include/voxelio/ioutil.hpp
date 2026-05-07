@@ -98,7 +98,7 @@ public:
 
     [[nodiscard]] ResultCode write(Voxel voxel)
     {
-        VXIO_DEBUG_ASSERT_NE(bufferSize, 0);
+        VXIO_DEBUG_ASSERT_NE(bufferSize, usize{0});
         auto result = bufferIndex == bufferSize ? flush() : ResultCode::WRITE_BUFFER_UNDERFULL;
         buffer[bufferIndex++] = std::move(voxel);
         return result;
